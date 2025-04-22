@@ -109,9 +109,33 @@ def process_shopee_daily_report(df_all, df_income):
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from PIL import Image
+import base64
 
 # --- Giao diện Streamlit ---
 st.set_page_config(page_title="REPORT DAILY OF SHOPEE", layout="wide")
+
+
+# ======= CHÈN LOGO GÓC TRÁI =======
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+
+logo_path = "../Tool_Report_shopee/logo-lamvlog.png"
+logo_base64 = get_base64_of_bin_file(logo_path)
+
+# Hiển thị logo ở góc trên bên trái
+st.markdown(
+    f"""
+    <div style='position: absolute; z-index: 1000;'>
+        <img src="data:image/png;base64,{logo_base64}" width="150"/>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.markdown(
     """
     <div style='text-align: center; display: flex; justify-content: center; align-items: center; gap: 10px;'>
