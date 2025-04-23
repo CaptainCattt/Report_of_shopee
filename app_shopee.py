@@ -123,7 +123,7 @@ def get_base64_of_bin_file(bin_file):
     return base64.b64encode(data).decode()
 
 
-logo_path = "./Tool_Report_shopee/logo-lamvlog.png"
+logo_path = "../Tool_Report_shopee/logo-lamvlog.png"
 logo_base64 = get_base64_of_bin_file(logo_path)
 
 # Hiển thị logo ở góc trên bên trái
