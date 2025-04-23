@@ -118,7 +118,7 @@ st.set_page_config(page_title="REPORT DAILY OF SHOPEE", layout="wide")
 # Chèn logo từ GitHub vào góc trên bên trái
 st.markdown(
     """
-    <div style='position: fixed; top: 60px; left: 40px; z-index: 1000;'>
+    <div style='top: 60px; left: 40px; z-index: 1000;'>
         <img src='https://raw.githubusercontent.com/CaptainCattt/Report_of_shopee/main/logo-lamvlog.png' width='150'/>
     </div>
     """,
