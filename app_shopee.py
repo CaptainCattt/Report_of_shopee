@@ -115,26 +115,16 @@ import base64
 # --- Giao diện Streamlit ---
 st.set_page_config(page_title="REPORT DAILY OF SHOPEE", layout="wide")
 
-
-# ======= CHÈN LOGO GÓC TRÁI =======
-def get_base64_of_bin_file(bin_file):
-    with open(bin_file, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
-
-
-logo_path = "../Tool_Report_shopee/logo-lamvlog.png"
-logo_base64 = get_base64_of_bin_file(logo_path)
-
-# Hiển thị logo ở góc trên bên trái
+# Chèn logo từ GitHub vào góc trên bên trái
 st.markdown(
-    f"""
-    <div style='position: absolute; z-index: 1000;'>
-        <img src="data:image/png;base64,{logo_base64}" width="150"/>
+    """
+    <div style='position: fixed; top: 10px; left: 10px; z-index: 1000;'>
+        <img src='https://raw.githubusercontent.com/CaptainCattt/Report_of_shopee/main/logo-lamvlog.png' width='100'/>
     </div>
     """,
     unsafe_allow_html=True,
 )
+
 
 st.markdown(
     """
