@@ -88,6 +88,18 @@ def process_shopee_daily_report(df_all, df_income):
 
     Tong_tien_quyet_toan = df_merged["Tổng tiền đã thanh toán"].sum()
 
+    Tong_tien_hoan_thanh = Don_hoan_thanh["Tổng tiền đã thanh toán"].sum()
+
+    VonX1 = 43741.24
+    VonX2 = 46041.24
+    VonCombo = 89782.48
+
+    Tong_von = (
+        So_luong_Scx1_hoan_thanh * VonX1
+        + So_luong_Scx2_hoan_thanh * VonX2
+        + So_luong_Sc_Combo_hoan_thanh * VonCombo
+    )
+
     return (
         Don_quyet_toan,
         Don_hoan_thanh,
@@ -103,6 +115,8 @@ def process_shopee_daily_report(df_all, df_income):
         So_luong_SC_Combo_hoan_tra,
         tong_san_pham_sp_hoan_thanh,
         Tong_tien_quyet_toan,
+        Tong_tien_hoan_thanh,
+        Tong_von,
     )
 
 
@@ -243,6 +257,8 @@ if process_btn:
                 So_luong_SC_Combo_hoan_tra,
                 tong_san_pham_sp_hoan_thanh,
                 Tong_tien_quyet_toan,
+                Tong_tien_hoan_thanh,
+                Tong_von,
             ) = process_shopee_daily_report(df_all, df_income)
 
             st.session_state["Don_quyet_toan"] = Don_quyet_toan
@@ -254,7 +270,18 @@ if process_btn:
                     "ĐƠN QUYẾT TOÁN": [So_don_quyet_toan],
                     "ĐƠN HOÀN THÀNH": [So_don_hoan_thanh],
                     "ĐƠN HOÀN TRẢ": [So_don_hoan_tra],
-                    "TÔNG TIỀN QUYẾT TOÁN": [f"{Tong_tien_quyet_toan:,.0f} VNĐ"],
+                    "SỐ TIỀN QUYẾT TOÁN": [Tong_tien_quyet_toan],
+                    "SỐ TIỀN HOÀN THÀNH": [Tong_tien_hoan_thanh],
+                },
+                index=["Shopee"],
+            )
+
+            bang_thong_ke_tien_shopee = pd.DataFrame(
+                {
+                    "SỐ TIỀN QUYẾT TOÁN": [Tong_tien_quyet_toan],
+                    "SỐ TIỀN HOÀN THÀNH": [Tong_tien_hoan_thanh],
+                    "TỔNG VỐN": [Tong_von],
+                    "LỢI NHUẬN": [Tong_tien_quyet_toan - Tong_von],
                 },
                 index=["Shopee"],
             )
@@ -345,6 +372,7 @@ if process_btn:
             st.session_state["bang_thong_ke_so_luong_shopee"] = (
                 bang_thong_ke_so_luong_shopee
             )
+            st.session_state["bang_thong_ke_tien_shopee"] = bang_thong_ke_tien_shopee
 
             st.session_state["fig_bar_shopee"] = fig_bar_shopee
             st.session_state["fig_pie_hoan_thanh"] = fig_pie_hoan_thanh
@@ -358,6 +386,10 @@ if st.session_state.processing:
         unsafe_allow_html=True,
     )
     st.markdown("<br><br>", unsafe_allow_html=True)
+
+    with st.container():
+        st.markdown("#### 📋 Bảng Thống Kê Tiền Hàng")
+        st.dataframe(st.session_state["bang_thong_ke_tien_shopee"])
 
     col1, col2 = st.columns(2)
     with col1:
