@@ -16,7 +16,26 @@ def process_shopee_daily_report(df_all, df_income):
             else x
         )
     )
+    df_all["SKU Category"] = df_all["SKU phân loại hàng"].copy()
 
+    # Danh sách các mẫu thay thế
+    replacements = {
+        r"^(COMBO-SC-ANHDUC|COMBO-SC-NGOCTRINH|COMBO-SC-MIX|SC_COMBO_MIX)": "COMBO-SC",
+        r"^(SC_X1)": "SC-450g",
+        r"^(SC_X2)": "SC-x2-450g",
+        r"^(SC_COMBO_X1|COMBO-CAYVUA-X1)": "COMBO-SCX1",
+        r"^(SC_COMBO_X2|COMBO-SIEUCAY-X2)": "COMBO-SCX2",
+        r"^(BTHP-Cay-200gr|BTHP_Cay)": "BTHP-CAY",
+        r"^(BTHP-200gr|BTHP_KhongCay)": "BTHP-0CAY",
+        r"^(BTHP_COMBO_MIX|BTHP003_combo_mix)": "BTHP-COMBO",
+        r"^(BTHP_COMBO_KhongCay|BTHP003_combo_kocay)": "BTHP-COMBO-0CAY",
+        r"^(BTHP_COMBO_Cay|BTHP003_combo_cay)": "BTHP-COMBO-CAY",
+    }
+
+    for pattern, replacement in replacements.items():
+        df_all["SKU Category"] = df_all["SKU Category"].str.replace(
+            pattern, replacement, regex=True
+        )
     date_columns_shopee = [
         "Ngày đặt hàng",
         "Ngày giao hàng dự kiến",
@@ -58,17 +77,13 @@ def process_shopee_daily_report(df_all, df_income):
 
     So_don_hoan_tra = len(Don_hoan_tra["Mã đơn hàng"].drop_duplicates())
 
-    Scx1_hoan_thanh = Don_hoan_thanh[Don_hoan_thanh["SKU phân loại hàng"] == "SC-450g"]
+    Scx1_hoan_thanh = Don_hoan_thanh[Don_hoan_thanh["SKU Category"] == "SC-450g"]
     So_luong_Scx1_hoan_thanh = Scx1_hoan_thanh["Số lượng"].sum()
 
-    Scx2_hoan_thanh = Don_hoan_thanh[
-        Don_hoan_thanh["SKU phân loại hàng"] == "SC-x2-450g"
-    ]
+    Scx2_hoan_thanh = Don_hoan_thanh[Don_hoan_thanh["SKU Category"] == "SC-x2-450g"]
     So_luong_Scx2_hoan_thanh = Scx2_hoan_thanh["Số lượng"].sum()
 
-    Sc_Combo_hoan_thanh = Don_hoan_thanh[
-        Don_hoan_thanh["SKU phân loại hàng"] == "COMBO-SC"
-    ]
+    Sc_Combo_hoan_thanh = Don_hoan_thanh[Don_hoan_thanh["SKU Category"] == "COMBO-SC"]
     So_luong_Sc_Combo_hoan_thanh = Sc_Combo_hoan_thanh["Số lượng"].sum()
 
     tong_san_pham_sp_hoan_thanh = (
@@ -77,18 +92,52 @@ def process_shopee_daily_report(df_all, df_income):
         + So_luong_Sc_Combo_hoan_thanh * 2
     )
 
-    Scx1_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU phân loại hàng"] == "SC-450g"]
+    Scx1_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU Category"] == "SC-450g"]
     So_luong_Scx1_hoan_tra = Scx1_hoan_tra["Số lượng"].sum()
 
-    SCx2_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU phân loại hàng"] == "SC-x2-450g"]
+    SCx2_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU Category"] == "SC-x2-450g"]
     So_luong_SCx2_hoan_tra = SCx2_hoan_tra["Số lượng"].sum()
 
-    SC_Combo_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU phân loại hàng"] == "COMBO-SC"]
+    SC_Combo_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU Category"] == "COMBO-SC"]
     So_luong_SC_Combo_hoan_tra = SC_Combo_hoan_tra["Số lượng"].sum()
 
     Tong_tien_quyet_toan = df_merged["Tổng tiền đã thanh toán"].sum()
 
     Tong_tien_hoan_thanh = Don_hoan_thanh["Tổng tiền đã thanh toán"].sum()
+
+    # COMBO SCx1, COMBO SCx2
+
+    COMBO_SCx1_hoan_thanh = Don_hoan_thanh[
+        Don_hoan_thanh["SKU Category"] == "COMBO-SCX1"
+    ]
+    so_luong_COMBO_SCx1_hoan_thanh = COMBO_SCx1_hoan_thanh["Số lượng"].sum()
+
+    COMBO_SCx2_hoan_thanh = Don_hoan_thanh[
+        Don_hoan_thanh["SKU Category"] == "COMBO-SCX2"
+    ]
+    so_luong_COMBO_SCx2_hoan_thanh = COMBO_SCx2_hoan_thanh["Số lượng"].sum()
+
+    COMBO_SCx1_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU Category"] == "COMBO-SCX1"]
+    So_luong_COMBO_SCx1_hoan_tra = COMBO_SCx1_hoan_tra["Số lượng"].sum()
+
+    COMBO_SCx2_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU Category"] == "COMBO-SCX2"]
+    So_luong_COMBO_SCx2_hoan_tra = COMBO_SCx2_hoan_tra["Số lượng"].sum()
+
+    # BÁNH TRÁNG
+
+    BTHP_0CAY_hoan_thanh = Don_hoan_thanh[df_merged["SKU Category"] == "BTHP-0CAY"]
+    BTHP_CAY_hoan_thanh = Don_hoan_thanh[df_merged["SKU Category"] == "BTHP-CAY"]
+    BTHP_COMBO_hoan_thanh = Don_hoan_thanh[df_merged["SKU Category"] == "BTHP-COMBO"]
+    BTHP_COMBO_0CAY_hoan_thanh = df_merged[
+        df_merged["SKU Category"] == "BTHP-COMBO-0CAY"
+    ]
+    BTHP_COMBO_CAY_hoan_thanh = df_merged[df_merged["SKU Category"] == "BTHP-COMBO-CAY"]
+
+    so_luong_BTHP_0CAY_hoan_thanh = BTHP_0CAY_hoan_thanh["Số lượng"].sum()
+    so_luong_BTHP_CAY_hoan_thanh = BTHP_CAY_hoan_thanh["Số lượng"].sum()
+    so_luong_BTHP_COMBO_hoan_thanh = BTHP_COMBO_hoan_thanh["Số lượng"].sum()
+    so_luong_BTHP_COMBO_0CAY_hoan_thanh = BTHP_COMBO_0CAY_hoan_thanh["Số lượng"].sum()
+    so_luong_BTHP_COMBO_CAY_hoan_thanh = BTHP_COMBO_CAY_hoan_thanh["Số lượng"].sum()
 
     VonX1 = 43741.24
     VonX2 = 46041.24
@@ -117,6 +166,17 @@ def process_shopee_daily_report(df_all, df_income):
         Tong_tien_quyet_toan,
         Tong_tien_hoan_thanh,
         Tong_von,
+        # COMBO NEW
+        so_luong_COMBO_SCx1_hoan_thanh,
+        so_luong_COMBO_SCx2_hoan_thanh,
+        So_luong_COMBO_SCx1_hoan_tra,
+        So_luong_COMBO_SCx2_hoan_tra,
+        # BTHP
+        so_luong_BTHP_0CAY_hoan_thanh,
+        so_luong_BTHP_CAY_hoan_thanh,
+        so_luong_BTHP_COMBO_hoan_thanh,
+        so_luong_BTHP_COMBO_0CAY_hoan_thanh,
+        so_luong_BTHP_COMBO_CAY_hoan_thanh,
     )
 
 
@@ -259,6 +319,17 @@ if process_btn:
                 Tong_tien_quyet_toan,
                 Tong_tien_hoan_thanh,
                 Tong_von,
+                # COMBO NEW
+                so_luong_COMBO_SCx1_hoan_thanh,
+                so_luong_COMBO_SCx2_hoan_thanh,
+                So_luong_COMBO_SCx1_hoan_tra,
+                So_luong_COMBO_SCx2_hoan_tra,
+                # BTHP
+                so_luong_BTHP_0CAY_hoan_thanh,
+                so_luong_BTHP_CAY_hoan_thanh,
+                so_luong_BTHP_COMBO_hoan_thanh,
+                so_luong_BTHP_COMBO_0CAY_hoan_thanh,
+                so_luong_BTHP_COMBO_CAY_hoan_thanh,
             ) = process_shopee_daily_report(df_all, df_income)
 
             st.session_state["Don_quyet_toan"] = Don_quyet_toan
@@ -317,9 +388,46 @@ if process_btn:
                         So_luong_Sc_Combo_hoan_thanh + So_luong_SC_Combo_hoan_tra,
                         So_luong_SC_Combo_hoan_tra,
                     ],
+                    "COMBO_SCx1": [
+                        so_luong_COMBO_SCx1_hoan_thanh,
+                        so_luong_COMBO_SCx1_hoan_thanh + So_luong_COMBO_SCx1_hoan_tra,
+                        So_luong_COMBO_SCx1_hoan_tra,
+                    ],
+                    "COMBO_SCx2": [
+                        so_luong_COMBO_SCx2_hoan_thanh,
+                        so_luong_COMBO_SCx2_hoan_thanh + So_luong_COMBO_SCx2_hoan_tra,
+                        So_luong_COMBO_SCx2_hoan_tra,
+                    ],
                 },
                 index=["HOÀN THÀNH", "QUYẾT TOÁN", "HOÀN TRẢ"],
             )
+
+            bang_thong_ke_so_luong_BTHP_shopee = pd.DataFrame(
+                {
+                    "BTHP_0CAY": [
+                        so_luong_BTHP_0CAY_hoan_thanh,
+                        so_luong_BTHP_0CAY_hoan_thanh,
+                    ],
+                    "BTHP_CAY": [
+                        so_luong_BTHP_CAY_hoan_thanh,
+                        so_luong_BTHP_CAY_hoan_thanh,
+                    ],
+                    "BTHP_COMBO": [
+                        so_luong_BTHP_COMBO_hoan_thanh,
+                        so_luong_BTHP_COMBO_hoan_thanh,
+                    ],
+                    "BTHP_COMBO_0CAY": [
+                        so_luong_BTHP_COMBO_0CAY_hoan_thanh,
+                        so_luong_BTHP_COMBO_0CAY_hoan_thanh,
+                    ],
+                    "BTHP_COMBO_CAY": [
+                        so_luong_BTHP_COMBO_CAY_hoan_thanh,
+                        so_luong_BTHP_COMBO_CAY_hoan_thanh,
+                    ],
+                },
+                index=["HOÀN THÀNH", "QUYẾT TOÁN"],
+            )
+
             # Vẽ các biểu đồ
             labels = [
                 "ĐƠN QUYẾT TOÁN",
@@ -374,6 +482,10 @@ if process_btn:
             )
             st.session_state["bang_thong_ke_tien_shopee"] = bang_thong_ke_tien_shopee
 
+            st.session_state["bang_thong_ke_so_luong_BTHP_shopee"] = (
+                bang_thong_ke_so_luong_BTHP_shopee
+            )
+
             st.session_state["fig_bar_shopee"] = fig_bar_shopee
             st.session_state["fig_pie_hoan_thanh"] = fig_pie_hoan_thanh
             st.session_state["fig_pie_quyet_toan"] = fig_pie_quyet_toan
@@ -399,6 +511,10 @@ if st.session_state.processing:
     with col2:
         st.markdown("#### 📈 Biểu Đồ Số Lượng Đơn Hàng")
         st.plotly_chart(st.session_state["fig_bar_shopee"], use_container_width=True)
+
+    with st.container():
+        st.markdown("#### 📋 Bảng Thống Kê Tiền Hàng")
+        st.dataframe(st.session_state["bang_thong_ke_so_luong_BTHP_shopee"])
 
     # Hiển thị thống kê sản phẩm
     st.markdown("### 📊 SỐ LƯỢNG SẢN PHẨM")
