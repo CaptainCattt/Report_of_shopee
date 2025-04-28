@@ -101,9 +101,11 @@ def process_shopee_daily_report(df_all, df_income):
     SC_Combo_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU Category"] == "COMBO-SC"]
     So_luong_SC_Combo_hoan_tra = SC_Combo_hoan_tra["Số lượng"].sum()
 
-    Tong_tien_quyet_toan = df_merged["Tổng tiền đã thanh toán"].sum()
+    Tong_tien_quyet_toan = df_income["Tổng tiền đã thanh toán"].sum()
 
-    Tong_tien_hoan_thanh = Don_hoan_thanh["Tổng tiền đã thanh toán"].sum()
+    Tong_tien_hoan_thanh = df_income["Tổng tiền đã thanh toán"][
+        df_income["Tổng tiền đã thanh toán"] > 0
+    ].sum()
 
     # COMBO SCx1, COMBO SCx2
 
