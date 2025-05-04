@@ -20,16 +20,21 @@ def process_shopee_daily_report(df_all, df_income):
 
     # Danh sách các mẫu thay thế
     replacements = {
-        r"^(COMBO-SC-ANHDUC|COMBO-SC-NGOCTRINH|COMBO-SC-MIX|SC_COMBO_MIX)": "COMBO-SC",
+        r"^(COMBO-SC-ANHDUC|COMBO-SC-NGOCTRINH|COMBO-SC-MIX|SC_COMBO_MIX|SC_COMBO_MIX_LIVESTREAM|COMBO-SC_LIVESTREAM)": "COMBO-SC",
         r"^(SC_X1)": "SC-450g",
         r"^(SC_X2)": "SC-x2-450g",
-        r"^(SC_COMBO_X1|COMBO-CAYVUA-X1)": "COMBO-SCX1",
-        r"^(SC_COMBO_X2|COMBO-SIEUCAY-X2)": "COMBO-SCX2",
+        r"^(SC_COMBO_X1|COMBO-CAYVUA-X1|SC_COMBO_X1_LIVESTREAM|COMBO-SCX1_LIVESTREAM)": "COMBO-SCX1",
+        r"^(SC_COMBO_X2|COMBO-SIEUCAY-X2|SC_COMBO_X2_LIVESTREAM|COMBO-SCX2_LIVESTREAM)": "COMBO-SCX2",
         r"^(BTHP-Cay-200gr|BTHP_Cay)": "BTHP-CAY",
         r"^(BTHP-200gr|BTHP_KhongCay)": "BTHP-0CAY",
         r"^(BTHP_COMBO_MIX|BTHP003_combo_mix)": "BTHP-COMBO",
         r"^(BTHP_COMBO_KhongCay|BTHP003_combo_kocay)": "BTHP-COMBO-0CAY",
         r"^(BTHP_COMBO_Cay|BTHP003_combo_cay)": "BTHP-COMBO-CAY",
+        r"^BTHP-COMBO\+SC_X1$": "COMBO_BTHP_SCx1",
+        r"^BTHP-COMBO\+SC_X2$": "COMBO_BTHP_SCx2",
+        r"^BTHP_COMBO_MIX\+SC_X1$": "COMBO_BTHP_SCx1",
+        r"^BTHP_COMBO_MIX\+SC_X2$": "COMBO_BTHP_SCx2",
+        r"^(BTHP-2Cay-2KhongCay)$": "COMBO_4BTHP",
     }
 
     for pattern, replacement in replacements.items():
@@ -108,7 +113,7 @@ def process_shopee_daily_report(df_all, df_income):
     ].sum()
 
     # COMBO SCx1, COMBO SCx2
-
+    # Hoàn thành
     COMBO_SCx1_hoan_thanh = Don_hoan_thanh[
         Don_hoan_thanh["SKU Category"] == "COMBO-SCX1"
     ]
@@ -119,6 +124,7 @@ def process_shopee_daily_report(df_all, df_income):
     ]
     so_luong_COMBO_SCx2_hoan_thanh = COMBO_SCx2_hoan_thanh["Số lượng"].sum()
 
+    # Hoàn trả
     COMBO_SCx1_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU Category"] == "COMBO-SCX1"]
     So_luong_COMBO_SCx1_hoan_tra = COMBO_SCx1_hoan_tra["Số lượng"].sum()
 
@@ -127,6 +133,7 @@ def process_shopee_daily_report(df_all, df_income):
 
     # BÁNH TRÁNG
 
+    # Hoàn thành
     BTHP_0CAY_hoan_thanh = Don_hoan_thanh[df_merged["SKU Category"] == "BTHP-0CAY"]
     BTHP_CAY_hoan_thanh = Don_hoan_thanh[df_merged["SKU Category"] == "BTHP-CAY"]
     BTHP_COMBO_hoan_thanh = Don_hoan_thanh[df_merged["SKU Category"] == "BTHP-COMBO"]
@@ -141,15 +148,81 @@ def process_shopee_daily_report(df_all, df_income):
     so_luong_BTHP_COMBO_0CAY_hoan_thanh = BTHP_COMBO_0CAY_hoan_thanh["Số lượng"].sum()
     so_luong_BTHP_COMBO_CAY_hoan_thanh = BTHP_COMBO_CAY_hoan_thanh["Số lượng"].sum()
 
-    VonX1 = 43741.24
-    VonX2 = 46041.24
-    VonCombo = 89782.48
+    # Hoàn trả
+    BTHP_0CAY_hoan_tra = Don_hoan_tra[df_merged["SKU Category"] == "BTHP-0CAY"]
+    BTHP_CAY_hoan_tra = Don_hoan_tra[df_merged["SKU Category"] == "BTHP-CAY"]
+    BTHP_COMBO_hoan_tra = Don_hoan_tra[df_merged["SKU Category"] == "BTHP-COMBO"]
+    BTHP_COMBO_0CAY_hoan_tra = Don_hoan_tra[
+        df_merged["SKU Category"] == "BTHP-COMBO-0CAY"
+    ]
+    BTHP_COMBO_CAY_hoan_tra = Don_hoan_tra[
+        df_merged["SKU Category"] == "BTHP-COMBO-CAY"
+    ]
 
-    Tong_von = (
-        So_luong_Scx1_hoan_thanh * VonX1
-        + So_luong_Scx2_hoan_thanh * VonX2
-        + So_luong_Sc_Combo_hoan_thanh * VonCombo
+    so_luong_BTHP_0CAY_hoan_tra = BTHP_0CAY_hoan_tra["Số lượng"].sum()
+    so_luong_BTHP_CAY_hoan_tra = BTHP_CAY_hoan_tra["Số lượng"].sum()
+    so_luong_BTHP_COMBO_hoan_tra = BTHP_COMBO_hoan_tra["Số lượng"].sum()
+    so_luong_BTHP_COMBO_0CAY_hoan_tra = BTHP_COMBO_0CAY_hoan_tra["Số lượng"].sum()
+    so_luong_BTHP_COMBO_CAY_hoan_tra = BTHP_COMBO_CAY_hoan_tra["Số lượng"].sum()
+
+    BTHP_SCx1_shopee_hoan_thanh = Don_hoan_thanh[
+        df_merged["SKU Category"] == "COMBO_BTHP_SCx1"
+    ]
+    BTHP_SCx2_shopee_hoan_thanh = Don_hoan_thanh[
+        df_merged["SKU Category"] == "COMBO_BTHP_SCx2"
+    ]
+    BTHP_SCx1_shopee_hoan_tra = Don_hoan_tra[
+        df_merged["SKU Category"] == "COMBO_BTHP_SCx1"
+    ]
+    BTHP_SCx2_shopee_hoan_tra = Don_hoan_tra[
+        df_merged["SKU Category"] == "COMBO_BTHP_SCx2"
+    ]
+
+    soluong_BTHP_SCx1_shopee_hoan_thanh = BTHP_SCx1_shopee_hoan_thanh["Số lượng"].sum()
+    soluong_BTHP_SCx2_shopee_hoan_thanh = BTHP_SCx2_shopee_hoan_thanh["Số lượng"].sum()
+
+    soluong_BTHP_SCx1_shopee_hoan_tra = BTHP_SCx1_shopee_hoan_tra["Số lượng"].sum()
+    soluong_BTHP_SCx2_shopee_hoan_tra = BTHP_SCx2_shopee_hoan_tra["Số lượng"].sum()
+
+    BTHP_SCx1_shopee_hoan_thanh = Don_hoan_thanh[
+        df_merged["SKU Category"] == "COMBO_BTHP_SCx1"
+    ]
+
+    BTHP_COMBO4_hoan_thanh_sp = Don_hoan_thanh[
+        df_merged["SKU Category"] == "COMBO_4BTHP"
+    ]
+    BTHP_COMBO4_hoan_tra_sp = Don_hoan_tra[df_merged["SKU Category"] == "COMBO_4BTHP"]
+
+    soluongBTHP_COMBO4_hoan_thanh_sp = BTHP_COMBO4_hoan_thanh_sp["Số lượng"].sum()
+    soluongBTHP_COMBO4_hoan_tra_sp = BTHP_COMBO4_hoan_tra_sp["Số lượng"].sum()
+
+    VonX1 = 41691.24
+    VonX2 = 44175.24
+    VonCombo = 85866.48
+
+    Tong_von_SC = (
+        (
+            So_luong_Scx1_hoan_thanh
+            + so_luong_COMBO_SCx1_hoan_thanh * 2
+            + soluong_BTHP_SCx1_shopee_hoan_thanh
+        )
+        * VonX1
+        + (
+            So_luong_Scx2_hoan_thanh
+            + so_luong_COMBO_SCx1_hoan_thanh * 2
+            + soluong_BTHP_SCx2_shopee_hoan_thanh
+        )
+        * VonX2
+        + (So_luong_Sc_Combo_hoan_thanh) * VonCombo
     )
+
+    Tong_Von_BTHP = (
+        so_luong_BTHP_0CAY_hoan_thanh
+        + so_luong_BTHP_CAY_hoan_thanh
+        + so_luong_BTHP_COMBO_hoan_thanh * 2
+        + so_luong_BTHP_COMBO_0CAY_hoan_thanh * 2
+        + so_luong_BTHP_COMBO_CAY_hoan_thanh * 2
+    ) * 24024.00
 
     return (
         Don_quyet_toan,
@@ -167,7 +240,8 @@ def process_shopee_daily_report(df_all, df_income):
         tong_san_pham_sp_hoan_thanh,
         Tong_tien_quyet_toan,
         Tong_tien_hoan_thanh,
-        Tong_von,
+        Tong_von_SC,
+        Tong_Von_BTHP,
         # COMBO NEW
         so_luong_COMBO_SCx1_hoan_thanh,
         so_luong_COMBO_SCx2_hoan_thanh,
@@ -179,6 +253,20 @@ def process_shopee_daily_report(df_all, df_income):
         so_luong_BTHP_COMBO_hoan_thanh,
         so_luong_BTHP_COMBO_0CAY_hoan_thanh,
         so_luong_BTHP_COMBO_CAY_hoan_thanh,
+        ###
+        so_luong_BTHP_0CAY_hoan_tra,
+        so_luong_BTHP_CAY_hoan_tra,
+        so_luong_BTHP_COMBO_hoan_tra,
+        so_luong_BTHP_COMBO_0CAY_hoan_tra,
+        so_luong_BTHP_COMBO_CAY_hoan_tra,
+        ###
+        soluong_BTHP_SCx1_shopee_hoan_thanh,
+        soluong_BTHP_SCx2_shopee_hoan_thanh,
+        soluong_BTHP_SCx1_shopee_hoan_tra,
+        soluong_BTHP_SCx2_shopee_hoan_tra,
+        ###
+        soluongBTHP_COMBO4_hoan_thanh_sp,
+        soluongBTHP_COMBO4_hoan_tra_sp,
     )
 
 
@@ -320,7 +408,8 @@ if process_btn:
                 tong_san_pham_sp_hoan_thanh,
                 Tong_tien_quyet_toan,
                 Tong_tien_hoan_thanh,
-                Tong_von,
+                Tong_von_SC,
+                Tong_Von_BTHP,
                 # COMBO NEW
                 so_luong_COMBO_SCx1_hoan_thanh,
                 so_luong_COMBO_SCx2_hoan_thanh,
@@ -332,6 +421,20 @@ if process_btn:
                 so_luong_BTHP_COMBO_hoan_thanh,
                 so_luong_BTHP_COMBO_0CAY_hoan_thanh,
                 so_luong_BTHP_COMBO_CAY_hoan_thanh,
+                ###
+                so_luong_BTHP_0CAY_hoan_tra,
+                so_luong_BTHP_CAY_hoan_tra,
+                so_luong_BTHP_COMBO_hoan_tra,
+                so_luong_BTHP_COMBO_0CAY_hoan_tra,
+                so_luong_BTHP_COMBO_CAY_hoan_tra,
+                ###
+                soluong_BTHP_SCx1_shopee_hoan_thanh,
+                soluong_BTHP_SCx2_shopee_hoan_thanh,
+                soluong_BTHP_SCx1_shopee_hoan_tra,
+                soluong_BTHP_SCx2_shopee_hoan_tra,
+                ###
+                soluongBTHP_COMBO4_hoan_thanh_sp,
+                soluongBTHP_COMBO4_hoan_tra_sp,
             ) = process_shopee_daily_report(df_all, df_income)
 
             st.session_state["Don_quyet_toan"] = Don_quyet_toan
@@ -353,8 +456,10 @@ if process_btn:
                 {
                     "SỐ TIỀN QUYẾT TOÁN": [Tong_tien_quyet_toan],
                     "SỐ TIỀN HOÀN THÀNH": [Tong_tien_hoan_thanh],
-                    "TỔNG VỐN": [Tong_von],
-                    "LỢI NHUẬN": [Tong_tien_quyet_toan - Tong_von],
+                    "TỔNG VỐN SC": [Tong_von_SC],
+                    "TỔNG VỐN BTHP": [Tong_Von_BTHP],
+                    "TỔNG VỐN": [Tong_von_SC + Tong_Von_BTHP],
+                    "LỢI NHUẬN": [Tong_tien_quyet_toan - (Tong_von_SC + Tong_Von_BTHP)],
                 },
                 index=["Shopee"],
             )
@@ -364,40 +469,43 @@ if process_btn:
                     "Tổng sản phẩm": [
                         So_luong_Scx1_hoan_thanh
                         + So_luong_Scx2_hoan_thanh
-                        + So_luong_Sc_Combo_hoan_thanh * 2,
-                        (So_luong_Scx1_hoan_tra + So_luong_Scx1_hoan_thanh)
-                        + (So_luong_Scx2_hoan_thanh + So_luong_SCx2_hoan_tra)
-                        + (
-                            So_luong_SC_Combo_hoan_tra * 2
-                            + So_luong_Sc_Combo_hoan_thanh * 2
-                        ),
+                        + So_luong_Sc_Combo_hoan_thanh * 2
+                        + soluong_BTHP_SCx1_shopee_hoan_thanh
+                        + soluong_BTHP_SCx2_shopee_hoan_thanh,
+                        So_luong_Scx1_hoan_thanh
+                        + So_luong_Scx2_hoan_thanh  # + đền bù (nếu có),)
+                        + So_luong_Sc_Combo_hoan_thanh * 2
+                        + soluong_BTHP_SCx1_shopee_hoan_thanh
+                        + soluong_BTHP_SCx2_shopee_hoan_thanh,
                         So_luong_Scx1_hoan_tra
                         + So_luong_SCx2_hoan_tra
-                        + So_luong_SC_Combo_hoan_tra * 2,
+                        + So_luong_SC_Combo_hoan_tra * 2
+                        + soluong_BTHP_SCx1_shopee_hoan_tra
+                        + soluong_BTHP_SCx2_shopee_hoan_tra,
                     ],
                     "SCx1": [
                         So_luong_Scx1_hoan_thanh,
-                        So_luong_Scx1_hoan_thanh + So_luong_Scx1_hoan_tra,
+                        So_luong_Scx1_hoan_thanh,  # + đền bù (nếu có),
                         So_luong_Scx1_hoan_tra,
                     ],
                     "SCx2": [
                         So_luong_Scx2_hoan_thanh,
-                        So_luong_Scx2_hoan_thanh + So_luong_SCx2_hoan_tra,
+                        So_luong_Scx2_hoan_thanh,  # + đền bù (nếu có),
                         So_luong_SCx2_hoan_tra,
                     ],
                     "SCxCOMBO": [
                         So_luong_Sc_Combo_hoan_thanh,
-                        So_luong_Sc_Combo_hoan_thanh + So_luong_SC_Combo_hoan_tra,
+                        So_luong_Sc_Combo_hoan_thanh,  # + đền bù (nếu có),
                         So_luong_SC_Combo_hoan_tra,
                     ],
                     "COMBO_SCx1": [
                         so_luong_COMBO_SCx1_hoan_thanh,
-                        so_luong_COMBO_SCx1_hoan_thanh + So_luong_COMBO_SCx1_hoan_tra,
+                        so_luong_COMBO_SCx1_hoan_thanh,  # + đền bù (nếu có),
                         So_luong_COMBO_SCx1_hoan_tra,
                     ],
                     "COMBO_SCx2": [
                         so_luong_COMBO_SCx2_hoan_thanh,
-                        so_luong_COMBO_SCx2_hoan_thanh + So_luong_COMBO_SCx2_hoan_tra,
+                        so_luong_COMBO_SCx2_hoan_thanh,  # + đền bù (nếu có),
                         So_luong_COMBO_SCx2_hoan_tra,
                     ],
                 },
@@ -406,28 +514,74 @@ if process_btn:
 
             bang_thong_ke_so_luong_BTHP_shopee = pd.DataFrame(
                 {
+                    "Tổng sản phẩm": [
+                        so_luong_BTHP_0CAY_hoan_thanh
+                        + so_luong_BTHP_CAY_hoan_thanh
+                        + so_luong_BTHP_COMBO_hoan_thanh * 2
+                        + so_luong_BTHP_COMBO_0CAY_hoan_thanh * 2
+                        + so_luong_BTHP_COMBO_CAY_hoan_thanh * 2
+                        + soluong_BTHP_SCx1_shopee_hoan_thanh * 2
+                        + soluong_BTHP_SCx2_shopee_hoan_thanh * 2
+                        + soluongBTHP_COMBO4_hoan_thanh_sp * 4,
+                        so_luong_BTHP_0CAY_hoan_thanh
+                        + so_luong_BTHP_CAY_hoan_thanh
+                        + so_luong_BTHP_COMBO_hoan_thanh * 2
+                        + so_luong_BTHP_COMBO_0CAY_hoan_thanh * 2
+                        + so_luong_BTHP_COMBO_CAY_hoan_thanh * 2
+                        + soluong_BTHP_SCx1_shopee_hoan_thanh * 2
+                        + soluong_BTHP_SCx2_shopee_hoan_thanh * 2
+                        + soluongBTHP_COMBO4_hoan_thanh_sp * 4,
+                        so_luong_BTHP_0CAY_hoan_tra
+                        + so_luong_BTHP_CAY_hoan_tra
+                        + so_luong_BTHP_COMBO_hoan_tra * 2
+                        + so_luong_BTHP_COMBO_0CAY_hoan_tra * 2
+                        + so_luong_BTHP_COMBO_CAY_hoan_tra * 2
+                        + soluong_BTHP_SCx1_shopee_hoan_tra * 2
+                        + soluong_BTHP_SCx1_shopee_hoan_tra * 2
+                        + soluongBTHP_COMBO4_hoan_tra_sp * 4,
+                    ],
                     "BTHP_0CAY": [
                         so_luong_BTHP_0CAY_hoan_thanh,
                         so_luong_BTHP_0CAY_hoan_thanh,
+                        so_luong_BTHP_0CAY_hoan_tra,
                     ],
                     "BTHP_CAY": [
                         so_luong_BTHP_CAY_hoan_thanh,
                         so_luong_BTHP_CAY_hoan_thanh,
+                        so_luong_BTHP_CAY_hoan_tra,
                     ],
                     "BTHP_COMBO": [
                         so_luong_BTHP_COMBO_hoan_thanh,
                         so_luong_BTHP_COMBO_hoan_thanh,
+                        so_luong_BTHP_COMBO_hoan_tra,
                     ],
                     "BTHP_COMBO_0CAY": [
                         so_luong_BTHP_COMBO_0CAY_hoan_thanh,
                         so_luong_BTHP_COMBO_0CAY_hoan_thanh,
+                        so_luong_BTHP_COMBO_0CAY_hoan_tra,
                     ],
                     "BTHP_COMBO_CAY": [
                         so_luong_BTHP_COMBO_CAY_hoan_thanh,
                         so_luong_BTHP_COMBO_CAY_hoan_thanh,
+                        so_luong_BTHP_COMBO_CAY_hoan_tra,
+                    ],
+                    "COMBO_BTHP + SCx1": [
+                        soluong_BTHP_SCx1_shopee_hoan_thanh,
+                        soluong_BTHP_SCx1_shopee_hoan_thanh,
+                        soluong_BTHP_SCx1_shopee_hoan_tra,
+                    ],
+                    "COMBO_BTHP + SCx2": [
+                        soluong_BTHP_SCx2_shopee_hoan_thanh,
+                        soluong_BTHP_SCx2_shopee_hoan_thanh,
+                        soluong_BTHP_SCx2_shopee_hoan_tra,
+                    ],
+                    "COMBO_4_BTHP": [
+                        soluongBTHP_COMBO4_hoan_thanh_sp,
+                        soluongBTHP_COMBO4_hoan_thanh_sp,
+                        soluongBTHP_COMBO4_hoan_tra_sp,
                     ],
                 },
-                index=["HOÀN THÀNH", "QUYẾT TOÁN"],
+                index=["HOÀN THÀNH", "QUYẾT TOÁN", "HOÀN TRẢ"],
             )
 
             # Vẽ các biểu đồ
