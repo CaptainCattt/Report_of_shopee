@@ -112,6 +112,10 @@ def process_shopee_daily_report(df_all, df_income):
         df_income["Tổng tiền đã thanh toán"] > 0
     ].sum()
 
+    Tong_phi = df_income["Tổng tiền đã thanh toán"][
+        df_income["Tổng tiền đã thanh toán"] < 0
+    ].sum()
+
     # COMBO SCx1, COMBO SCx2
     # Hoàn thành
     COMBO_SCx1_hoan_thanh = Don_hoan_thanh[
@@ -242,6 +246,7 @@ def process_shopee_daily_report(df_all, df_income):
         Tong_tien_hoan_thanh,
         Tong_von_SC,
         Tong_Von_BTHP,
+        Tong_phi,
         # COMBO NEW
         so_luong_COMBO_SCx1_hoan_thanh,
         so_luong_COMBO_SCx2_hoan_thanh,
@@ -410,6 +415,7 @@ if process_btn:
                 Tong_tien_hoan_thanh,
                 Tong_von_SC,
                 Tong_Von_BTHP,
+                Tong_phi,
                 # COMBO NEW
                 so_luong_COMBO_SCx1_hoan_thanh,
                 so_luong_COMBO_SCx2_hoan_thanh,
@@ -446,22 +452,28 @@ if process_btn:
                     "ĐƠN QUYẾT TOÁN": [So_don_quyet_toan],
                     "ĐƠN HOÀN THÀNH": [So_don_hoan_thanh],
                     "ĐƠN HOÀN TRẢ": [So_don_hoan_tra],
-                    "SỐ TIỀN QUYẾT TOÁN": [Tong_tien_quyet_toan],
-                    "SỐ TIỀN HOÀN THÀNH": [Tong_tien_hoan_thanh],
                 },
                 index=["Shopee"],
             )
 
+            def format_vn_number(x):
+                return f"{x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
             bang_thong_ke_tien_shopee = pd.DataFrame(
                 {
-                    "SỐ TIỀN QUYẾT TOÁN": [Tong_tien_quyet_toan],
+                    "TỔNG PHÍ": [Tong_phi],
                     "SỐ TIỀN HOÀN THÀNH": [Tong_tien_hoan_thanh],
+                    "SỐ TIỀN QUYẾT TOÁN": [Tong_tien_quyet_toan],
+                    "TỔNG VỐN": [Tong_von_SC + Tong_Von_BTHP],
                     "TỔNG VỐN SC": [Tong_von_SC],
                     "TỔNG VỐN BTHP": [Tong_Von_BTHP],
-                    "TỔNG VỐN": [Tong_von_SC + Tong_Von_BTHP],
                     "LỢI NHUẬN": [Tong_tien_quyet_toan - (Tong_von_SC + Tong_Von_BTHP)],
                 },
                 index=["Shopee"],
+            )
+
+            bang_thong_ke_tien_shopee = bang_thong_ke_tien_shopee.applymap(
+                format_vn_number
             )
 
             bang_thong_ke_so_luong_shopee = pd.DataFrame(
@@ -669,28 +681,32 @@ if st.session_state.processing:
         st.plotly_chart(st.session_state["fig_bar_shopee"], use_container_width=True)
 
     with st.container():
-        st.markdown("#### 📋 Bảng Thống Kê Tiền Hàng")
+        st.markdown("#### 📋 Bảng Thống Kê Chi Tiết Sản Phẩm BTHP")
         st.dataframe(st.session_state["bang_thong_ke_so_luong_BTHP_shopee"])
 
-    # Hiển thị thống kê sản phẩm
-    st.markdown("### 📊 SỐ LƯỢNG SẢN PHẨM")
-    col4, col5, col6 = st.columns(3)
-
-    with col4:
-        st.markdown("#### 📋 Bảng Thống Kê Sản Phẩm")
+    with st.container():
+        st.markdown("#### 📋 Bảng Thống Kê Chi Tiết Sản Phẩm Sốt Chấm")
         st.dataframe(st.session_state["bang_thong_ke_so_luong_shopee"])
 
-    with col5:
-        st.markdown("#### 📈 Biểu Đồ Hoàn Thành")
-        st.plotly_chart(
-            st.session_state["fig_pie_hoan_thanh"], use_container_width=True
-        )
+    # Hiển thị thống kê sản phẩm
+    # st.markdown("### 📊 SỐ LƯỢNG SẢN PHẨM")
+    # col4, col5, col6 = st.columns(3)
 
-    with col6:
-        st.markdown("#### 📈 Biểu Đồ Quyết Toán")
-        st.plotly_chart(
-            st.session_state["fig_pie_quyet_toan"], use_container_width=True
-        )
+    # with col4:
+    #     st.markdown("#### 📋 Bảng Thống Kê Sản Phẩm")
+    #     st.dataframe(st.session_state["bang_thong_ke_so_luong_shopee"])
+
+    # with col5:
+    #     st.markdown("#### 📈 Biểu Đồ Hoàn Thành")
+    #     st.plotly_chart(
+    #         st.session_state["fig_pie_hoan_thanh"], use_container_width=True
+    #     )
+
+    # with col6:
+    #     st.markdown("#### 📈 Biểu Đồ Quyết Toán")
+    #     st.plotly_chart(
+    #         st.session_state["fig_pie_quyet_toan"], use_container_width=True
+    #     )
 
     st.markdown("### 🔍 Xem chi tiết theo loại đơn hàng")
 
