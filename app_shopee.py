@@ -35,6 +35,8 @@ def process_shopee_daily_report(df_all, df_income):
         r"^BTHP_COMBO_MIX\+SC_X1$": "COMBO_BTHP_SCx1",
         r"^BTHP_COMBO_MIX\+SC_X2$": "COMBO_BTHP_SCx2",
         r"^(BTHP-2Cay-2KhongCay)$": "COMBO_4BTHP",
+        r"^(BTHP-4Hu-KhongCay)$": "4BTHP_0CAY",
+        r"^(BTHP-4Hu-Cay)$": "4BTHP_CAY",
     }
 
     for pattern, replacement in replacements.items():
@@ -78,6 +80,7 @@ def process_shopee_daily_report(df_all, df_income):
 
     Don_hoan_tra = df_merged[
         (df_merged["Trạng thái Trả hàng/Hoàn tiền"] == "Đã Chấp Thuận Yêu Cầu")
+        or (df_merged["Số lượng sản phẩm được hoàn trả"] != 0)
     ]
 
     So_don_hoan_tra = len(Don_hoan_tra["Mã đơn hàng"].drop_duplicates())
@@ -192,6 +195,8 @@ def process_shopee_daily_report(df_all, df_income):
         df_merged["SKU Category"] == "COMBO_BTHP_SCx1"
     ]
 
+    # BTHP COMBO 4
+
     BTHP_COMBO4_hoan_thanh_sp = Don_hoan_thanh[
         df_merged["SKU Category"] == "COMBO_4BTHP"
     ]
@@ -199,6 +204,29 @@ def process_shopee_daily_report(df_all, df_income):
 
     soluongBTHP_COMBO4_hoan_thanh_sp = BTHP_COMBO4_hoan_thanh_sp["Số lượng"].sum()
     soluongBTHP_COMBO4_hoan_tra_sp = BTHP_COMBO4_hoan_tra_sp["Số lượng"].sum()
+
+    BTHP_COMBO4_0CAY_hoan_thanh_sp = Don_hoan_thanh[
+        df_merged["SKU Category"] == "4BTHP_0CAY"
+    ]
+
+    BTHP_COMBO4_0CAY_hoan_tra_sp = Don_hoan_tra[
+        df_merged["SKU Category"] == "4BTHP_CAY"
+    ]
+
+    BTHP_COMBO4_CAY_hoan_thanh_sp = Don_hoan_thanh[
+        df_merged["SKU Category"] == "4BTHP_0CAY"
+    ]
+
+    BTHP_COMBO4_CAY_hoan_tra_sp = Don_hoan_tra[df_merged["SKU Category"] == "4BTHP_CAY"]
+
+    soluongBTHP_COMBO4_0CAY_hoan_thanh_sp = BTHP_COMBO4_0CAY_hoan_thanh_sp[
+        "Số lượng"
+    ].sum()
+    soluongBTHP_COMBO4_0CAY_hoan_tra_sp = BTHP_COMBO4_0CAY_hoan_tra_sp["Số lượng"].sum()
+    soluongBTHP_COMBO4_CAY_hoan_thanh_sp = BTHP_COMBO4_CAY_hoan_thanh_sp[
+        "Số lượng"
+    ].sum()
+    soluongBTHP_COMBO4_CAY_hoan_tra_sp = BTHP_COMBO4_CAY_hoan_tra_sp["Số lượng"].sum()
 
     VonX1 = 41691.24
     VonX2 = 44175.24
@@ -226,6 +254,9 @@ def process_shopee_daily_report(df_all, df_income):
         + so_luong_BTHP_COMBO_hoan_thanh * 2
         + so_luong_BTHP_COMBO_0CAY_hoan_thanh * 2
         + so_luong_BTHP_COMBO_CAY_hoan_thanh * 2
+        + soluongBTHP_COMBO4_hoan_thanh_sp * 4
+        + soluongBTHP_COMBO4_0CAY_hoan_thanh_sp * 4
+        + soluongBTHP_COMBO4_CAY_hoan_thanh_sp * 4
     ) * 24024.00
 
     return (
@@ -272,6 +303,11 @@ def process_shopee_daily_report(df_all, df_income):
         ###
         soluongBTHP_COMBO4_hoan_thanh_sp,
         soluongBTHP_COMBO4_hoan_tra_sp,
+        ###
+        soluongBTHP_COMBO4_0CAY_hoan_thanh_sp,
+        soluongBTHP_COMBO4_0CAY_hoan_tra_sp,
+        soluongBTHP_COMBO4_CAY_hoan_thanh_sp,
+        soluongBTHP_COMBO4_CAY_hoan_tra_sp,
     )
 
 
@@ -441,6 +477,11 @@ if process_btn:
                 ###
                 soluongBTHP_COMBO4_hoan_thanh_sp,
                 soluongBTHP_COMBO4_hoan_tra_sp,
+                ###
+                soluongBTHP_COMBO4_0CAY_hoan_thanh_sp,
+                soluongBTHP_COMBO4_0CAY_hoan_tra_sp,
+                soluongBTHP_COMBO4_CAY_hoan_thanh_sp,
+                soluongBTHP_COMBO4_CAY_hoan_tra_sp,
             ) = process_shopee_daily_report(df_all, df_income)
 
             st.session_state["Don_quyet_toan"] = Don_quyet_toan
@@ -534,7 +575,9 @@ if process_btn:
                         + so_luong_BTHP_COMBO_CAY_hoan_thanh * 2
                         + soluong_BTHP_SCx1_shopee_hoan_thanh * 2
                         + soluong_BTHP_SCx2_shopee_hoan_thanh * 2
-                        + soluongBTHP_COMBO4_hoan_thanh_sp * 4,
+                        + soluongBTHP_COMBO4_hoan_thanh_sp * 4
+                        + soluongBTHP_COMBO4_0CAY_hoan_thanh_sp * 4
+                        + soluongBTHP_COMBO4_CAY_hoan_thanh_sp * 4,
                         so_luong_BTHP_0CAY_hoan_thanh
                         + so_luong_BTHP_CAY_hoan_thanh
                         + so_luong_BTHP_COMBO_hoan_thanh * 2
@@ -542,7 +585,9 @@ if process_btn:
                         + so_luong_BTHP_COMBO_CAY_hoan_thanh * 2
                         + soluong_BTHP_SCx1_shopee_hoan_thanh * 2
                         + soluong_BTHP_SCx2_shopee_hoan_thanh * 2
-                        + soluongBTHP_COMBO4_hoan_thanh_sp * 4,
+                        + soluongBTHP_COMBO4_hoan_thanh_sp * 4
+                        + soluongBTHP_COMBO4_0CAY_hoan_thanh_sp * 4
+                        + soluongBTHP_COMBO4_CAY_hoan_thanh_sp * 4,
                         so_luong_BTHP_0CAY_hoan_tra
                         + so_luong_BTHP_CAY_hoan_tra
                         + so_luong_BTHP_COMBO_hoan_tra * 2
@@ -550,7 +595,9 @@ if process_btn:
                         + so_luong_BTHP_COMBO_CAY_hoan_tra * 2
                         + soluong_BTHP_SCx1_shopee_hoan_tra * 2
                         + soluong_BTHP_SCx1_shopee_hoan_tra * 2
-                        + soluongBTHP_COMBO4_hoan_tra_sp * 4,
+                        + soluongBTHP_COMBO4_hoan_tra_sp * 4
+                        + soluongBTHP_COMBO4_0CAY_hoan_tra_sp * 4
+                        + soluongBTHP_COMBO4_CAY_hoan_tra_sp * 4,
                     ],
                     "BTHP_0CAY": [
                         so_luong_BTHP_0CAY_hoan_thanh,
@@ -591,6 +638,16 @@ if process_btn:
                         soluongBTHP_COMBO4_hoan_thanh_sp,
                         soluongBTHP_COMBO4_hoan_thanh_sp,
                         soluongBTHP_COMBO4_hoan_tra_sp,
+                    ],
+                    "COMBO_4BTHP_0CAY": [
+                        soluongBTHP_COMBO4_0CAY_hoan_thanh_sp,
+                        soluongBTHP_COMBO4_0CAY_hoan_thanh_sp,
+                        soluongBTHP_COMBO4_0CAY_hoan_tra_sp,
+                    ],
+                    "COMBO_4BTHP_CAY": [
+                        soluongBTHP_COMBO4_CAY_hoan_thanh_sp,
+                        soluongBTHP_COMBO4_CAY_hoan_thanh_sp,
+                        soluongBTHP_COMBO4_CAY_hoan_tra_sp,
                     ],
                 },
                 index=["HOÀN THÀNH", "QUYẾT TOÁN", "HOÀN TRẢ"],
