@@ -80,7 +80,7 @@ def process_shopee_daily_report(df_all, df_income):
 
     Don_hoan_tra = df_merged[
         (df_merged["Trạng thái Trả hàng/Hoàn tiền"] == "Đã Chấp Thuận Yêu Cầu")
-        or (df_merged["Số lượng sản phẩm được hoàn trả"] != 0)
+        | (df_merged["Số lượng sản phẩm được hoàn trả"] != 0)
     ]
 
     So_don_hoan_tra = len(Don_hoan_tra["Mã đơn hàng"].drop_duplicates())
