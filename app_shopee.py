@@ -241,7 +241,7 @@ def process_shopee_daily_report(df_all, df_income):
         * VonX1
         + (
             So_luong_Scx2_hoan_thanh
-            + so_luong_COMBO_SCx1_hoan_thanh * 2
+            + so_luong_COMBO_SCx2_hoan_thanh * 2
             + soluong_BTHP_SCx2_shopee_hoan_thanh
         )
         * VonX2
