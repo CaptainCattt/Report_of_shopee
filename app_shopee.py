@@ -742,12 +742,12 @@ if st.session_state.processing:
         st.plotly_chart(st.session_state["fig_bar_shopee"], use_container_width=True)
 
     with st.container():
-        st.markdown("#### 📋 Bảng Thống Kê Chi Tiết Sản Phẩm BTHP")
-        st.dataframe(st.session_state["bang_thong_ke_so_luong_BTHP_shopee"])
-
-    with st.container():
         st.markdown("#### 📋 Bảng Thống Kê Chi Tiết Sản Phẩm Sốt Chấm")
         st.dataframe(st.session_state["bang_thong_ke_so_luong_shopee"])
+
+    with st.container():
+        st.markdown("#### 📋 Bảng Thống Kê Chi Tiết Sản Phẩm BTHP")
+        st.dataframe(st.session_state["bang_thong_ke_so_luong_BTHP_shopee"])
 
     # Hiển thị thống kê sản phẩm
     # st.markdown("### 📊 SỐ LƯỢNG SẢN PHẨM")
