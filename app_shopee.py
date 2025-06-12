@@ -72,6 +72,7 @@ def process_shopee_daily_report(df_all, df_income):
             left_on="Mã đơn hàng",
         )
 
+    df_merged = df_merged[df_merged["Đơn hàng / Sản phẩm"] == "Order"]
     Don_quyet_toan = df_merged
     So_don_quyet_toan = len(Don_quyet_toan["Mã đơn hàng"].drop_duplicates())
 
@@ -109,6 +110,8 @@ def process_shopee_daily_report(df_all, df_income):
     SC_Combo_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU Category"] == "COMBO-SC"]
     So_luong_SC_Combo_hoan_tra = SC_Combo_hoan_tra["Số lượng"].sum()
 
+    df_income = df_income[df_income["Đơn hàng / Sản phẩm"] == "Order"]
+
     Tong_tien_quyet_toan = df_income["Tổng tiền đã thanh toán"].sum()
 
     Tong_tien_hoan_thanh = df_income["Tổng tiền đã thanh toán"][
@@ -141,13 +144,17 @@ def process_shopee_daily_report(df_all, df_income):
     # BÁNH TRÁNG
 
     # Hoàn thành
-    BTHP_0CAY_hoan_thanh = Don_hoan_thanh[df_merged["SKU Category"] == "BTHP-0CAY"]
-    BTHP_CAY_hoan_thanh = Don_hoan_thanh[df_merged["SKU Category"] == "BTHP-CAY"]
-    BTHP_COMBO_hoan_thanh = Don_hoan_thanh[df_merged["SKU Category"] == "BTHP-COMBO"]
-    BTHP_COMBO_0CAY_hoan_thanh = df_merged[
-        df_merged["SKU Category"] == "BTHP-COMBO-0CAY"
+    BTHP_0CAY_hoan_thanh = Don_hoan_thanh[Don_hoan_thanh["SKU Category"] == "BTHP-0CAY"]
+    BTHP_CAY_hoan_thanh = Don_hoan_thanh[Don_hoan_thanh["SKU Category"] == "BTHP-CAY"]
+    BTHP_COMBO_hoan_thanh = Don_hoan_thanh[
+        Don_hoan_thanh["SKU Category"] == "BTHP-COMBO"
     ]
-    BTHP_COMBO_CAY_hoan_thanh = df_merged[df_merged["SKU Category"] == "BTHP-COMBO-CAY"]
+    BTHP_COMBO_0CAY_hoan_thanh = Don_hoan_thanh[
+        Don_hoan_thanh["SKU Category"] == "BTHP-COMBO-0CAY"
+    ]
+    BTHP_COMBO_CAY_hoan_thanh = Don_hoan_thanh[
+        Don_hoan_thanh["SKU Category"] == "BTHP-COMBO-CAY"
+    ]
 
     so_luong_BTHP_0CAY_hoan_thanh = BTHP_0CAY_hoan_thanh["Số lượng"].sum()
     so_luong_BTHP_CAY_hoan_thanh = BTHP_CAY_hoan_thanh["Số lượng"].sum()
@@ -156,14 +163,14 @@ def process_shopee_daily_report(df_all, df_income):
     so_luong_BTHP_COMBO_CAY_hoan_thanh = BTHP_COMBO_CAY_hoan_thanh["Số lượng"].sum()
 
     # Hoàn trả
-    BTHP_0CAY_hoan_tra = Don_hoan_tra[df_merged["SKU Category"] == "BTHP-0CAY"]
-    BTHP_CAY_hoan_tra = Don_hoan_tra[df_merged["SKU Category"] == "BTHP-CAY"]
-    BTHP_COMBO_hoan_tra = Don_hoan_tra[df_merged["SKU Category"] == "BTHP-COMBO"]
+    BTHP_0CAY_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU Category"] == "BTHP-0CAY"]
+    BTHP_CAY_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU Category"] == "BTHP-CAY"]
+    BTHP_COMBO_hoan_tra = Don_hoan_tra[Don_hoan_tra["SKU Category"] == "BTHP-COMBO"]
     BTHP_COMBO_0CAY_hoan_tra = Don_hoan_tra[
-        df_merged["SKU Category"] == "BTHP-COMBO-0CAY"
+        Don_hoan_tra["SKU Category"] == "BTHP-COMBO-0CAY"
     ]
     BTHP_COMBO_CAY_hoan_tra = Don_hoan_tra[
-        df_merged["SKU Category"] == "BTHP-COMBO-CAY"
+        Don_hoan_tra["SKU Category"] == "BTHP-COMBO-CAY"
     ]
 
     so_luong_BTHP_0CAY_hoan_tra = BTHP_0CAY_hoan_tra["Số lượng"].sum()
@@ -173,16 +180,16 @@ def process_shopee_daily_report(df_all, df_income):
     so_luong_BTHP_COMBO_CAY_hoan_tra = BTHP_COMBO_CAY_hoan_tra["Số lượng"].sum()
 
     BTHP_SCx1_shopee_hoan_thanh = Don_hoan_thanh[
-        df_merged["SKU Category"] == "COMBO_BTHP_SCx1"
+        Don_hoan_thanh["SKU Category"] == "COMBO_BTHP_SCx1"
     ]
     BTHP_SCx2_shopee_hoan_thanh = Don_hoan_thanh[
-        df_merged["SKU Category"] == "COMBO_BTHP_SCx2"
+        Don_hoan_thanh["SKU Category"] == "COMBO_BTHP_SCx2"
     ]
     BTHP_SCx1_shopee_hoan_tra = Don_hoan_tra[
-        df_merged["SKU Category"] == "COMBO_BTHP_SCx1"
+        Don_hoan_tra["SKU Category"] == "COMBO_BTHP_SCx1"
     ]
     BTHP_SCx2_shopee_hoan_tra = Don_hoan_tra[
-        df_merged["SKU Category"] == "COMBO_BTHP_SCx2"
+        Don_hoan_tra["SKU Category"] == "COMBO_BTHP_SCx2"
     ]
 
     soluong_BTHP_SCx1_shopee_hoan_thanh = BTHP_SCx1_shopee_hoan_thanh["Số lượng"].sum()
@@ -192,32 +199,36 @@ def process_shopee_daily_report(df_all, df_income):
     soluong_BTHP_SCx2_shopee_hoan_tra = BTHP_SCx2_shopee_hoan_tra["Số lượng"].sum()
 
     BTHP_SCx1_shopee_hoan_thanh = Don_hoan_thanh[
-        df_merged["SKU Category"] == "COMBO_BTHP_SCx1"
+        Don_hoan_thanh["SKU Category"] == "COMBO_BTHP_SCx1"
     ]
 
     # BTHP COMBO 4
 
     BTHP_COMBO4_hoan_thanh_sp = Don_hoan_thanh[
-        df_merged["SKU Category"] == "COMBO_4BTHP"
+        Don_hoan_thanh["SKU Category"] == "COMBO_4BTHP"
     ]
-    BTHP_COMBO4_hoan_tra_sp = Don_hoan_tra[df_merged["SKU Category"] == "COMBO_4BTHP"]
+    BTHP_COMBO4_hoan_tra_sp = Don_hoan_tra[
+        Don_hoan_tra["SKU Category"] == "COMBO_4BTHP"
+    ]
 
     soluongBTHP_COMBO4_hoan_thanh_sp = BTHP_COMBO4_hoan_thanh_sp["Số lượng"].sum()
     soluongBTHP_COMBO4_hoan_tra_sp = BTHP_COMBO4_hoan_tra_sp["Số lượng"].sum()
 
     BTHP_COMBO4_0CAY_hoan_thanh_sp = Don_hoan_thanh[
-        df_merged["SKU Category"] == "4BTHP_0CAY"
+        Don_hoan_thanh["SKU Category"] == "4BTHP_0CAY"
     ]
 
     BTHP_COMBO4_0CAY_hoan_tra_sp = Don_hoan_tra[
-        df_merged["SKU Category"] == "4BTHP_CAY"
+        Don_hoan_tra["SKU Category"] == "4BTHP_CAY"
     ]
 
     BTHP_COMBO4_CAY_hoan_thanh_sp = Don_hoan_thanh[
-        df_merged["SKU Category"] == "4BTHP_0CAY"
+        Don_hoan_thanh["SKU Category"] == "4BTHP_0CAY"
     ]
 
-    BTHP_COMBO4_CAY_hoan_tra_sp = Don_hoan_tra[df_merged["SKU Category"] == "4BTHP_CAY"]
+    BTHP_COMBO4_CAY_hoan_tra_sp = Don_hoan_tra[
+        Don_hoan_tra["SKU Category"] == "4BTHP_CAY"
+    ]
 
     soluongBTHP_COMBO4_0CAY_hoan_thanh_sp = BTHP_COMBO4_0CAY_hoan_thanh_sp[
         "Số lượng"
@@ -426,7 +437,7 @@ if process_btn:
             )
             df_income = pd.read_excel(
                 file_income,
-                sheet_name="Income",  # tên sheet
+                sheet_name="Doanh thu",  # tên sheet
                 dtype={
                     "Mã đơn hàng": str,
                     "Mã Số Thuế": str,
@@ -498,7 +509,13 @@ if process_btn:
             )
 
             def format_vn_number(x):
-                return f"{x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+                if isinstance(x, (int, float)):
+                    return (
+                        f"{x:,.2f}".replace(",", "X")
+                        .replace(".", ",")
+                        .replace("X", ".")
+                    )
+                return x  # Trả lại nguyên nếu không phải số
 
             bang_thong_ke_tien_shopee = pd.DataFrame(
                 {
@@ -513,9 +530,10 @@ if process_btn:
                 index=["Shopee"],
             )
 
-            bang_thong_ke_tien_shopee = bang_thong_ke_tien_shopee.applymap(
-                format_vn_number
-            )
+            for col in bang_thong_ke_tien_shopee.columns:
+                bang_thong_ke_tien_shopee[col] = bang_thong_ke_tien_shopee[col].map(
+                    format_vn_number
+                )
 
             bang_thong_ke_so_luong_shopee = pd.DataFrame(
                 {
